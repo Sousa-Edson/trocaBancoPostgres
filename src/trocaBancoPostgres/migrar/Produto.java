@@ -53,7 +53,7 @@ public class Produto {
 	}
 
 	public static void salvar(int idAntigo, String nome, Double valor, String observacao, int unidade, int ncm) {
-		System.out.println("ssalvar::::" + unidade);
+		System.out.println("salvar::::" + idAntigo);
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
 			String sql = "INSERT INTO produto (descricao, unidade_id, valor, ncm_id, observacao, ativo,idAntigo)"
 					+ " VALUES (?, ?, ?, ?, ?, true,?)";
