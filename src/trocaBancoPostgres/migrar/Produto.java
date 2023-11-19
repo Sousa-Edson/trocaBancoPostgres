@@ -23,10 +23,20 @@ public class Produto {
 
 				while (resultSet.next()) {
 					int idUnidade = resultSet.getInt("idunid");
-					System.out.println("idUnidade:::"+idUnidade);
-					
-					int unidade=Unidade.encontraUnidade(idUnidade);
-					System.out.println("unidade:::"+unidade);
+					System.out.println("idUnidade:::" + idUnidade);
+					int unidade = Unidade.encontraUnidade(idUnidade);
+					System.out.println("unidade:::" + unidade);
+
+					String idNcm = resultSet.getString("ncm_prod");
+					idNcm = idNcm.trim();
+					System.out.println("idNcm:::" + idNcm);
+					if (idNcm.trim().equals("")) {
+						System.out.println("erro");
+						idNcm = "00000000";
+					}
+					int ncm = NCM.encontraNCM(idNcm);
+					System.out.println("ncm:::" + ncm);
+
 					int id = resultSet.getInt("sis_prod");
 					String tipo = resultSet.getString("tipo_prod");
 					String nome = resultSet.getString("nome_prod");
@@ -34,7 +44,7 @@ public class Produto {
 					Double valor = resultSet.getDouble("valor_prod");
 					String observacao = resultSet.getString("obs_prod");
 					System.out.println("" + id);
-					salvar(id, tipo + " " + nome + " " + edicao, valor, observacao,unidade);
+					salvar(id, tipo + " " + nome + " " + edicao, valor, observacao, unidade, ncm);
 				}
 			}
 		} catch (SQLException e) {
@@ -42,20 +52,20 @@ public class Produto {
 		}
 	}
 
-	public static void salvar(int idAntigo, String nome, Double valor, String observacao,int unidade) {
-		System.out.println("ssalvar::::"+unidade);
+	public static void salvar(int idAntigo, String nome, Double valor, String observacao, int unidade, int ncm) {
+		System.out.println("ssalvar::::" + unidade);
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
-			String sql = "INSERT INTO produto (descricao, unidade_id, valor, ncm_id, observacao, ativo)"
-					+ " VALUES (?, ?, ?, ?, ?, true)";
+			String sql = "INSERT INTO produto (descricao, unidade_id, valor, ncm_id, observacao, ativo,idAntigo)"
+					+ " VALUES (?, ?, ?, ?, ?, true,?)";
 
 			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
 				preparedStatement.setString(1, nome);
 				preparedStatement.setInt(2, unidade);
 				preparedStatement.setDouble(3, valor);
-				preparedStatement.setInt(4, 1); // nvm
+				preparedStatement.setInt(4, ncm);
 				preparedStatement.setString(5, observacao);
 
-//                preparedStatement.setInt(6, idAntigo);
+                preparedStatement.setInt(6, idAntigo);
 
 				preparedStatement.executeUpdate();
 			}
@@ -79,7 +89,7 @@ public class Produto {
 		}
 	}
 
-	public static void createTableUnidade() {
+	public static void createTable() {
 		try (Connection connection = ConexaoNova.obterConexao()) {
 			Statement statement = connection.createStatement();
 
@@ -141,7 +151,7 @@ public class Produto {
 
 	public static void main(String[] args) {
 		dropTable("produto");
-		createTableUnidade();
+		createTable();
 		adicionarColunaDeletado();
 		adicionarColunavaloNumerico();
 		adicionarColunaIdAntigo();

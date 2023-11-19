@@ -39,9 +39,8 @@ public class Unidade {
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
 			String sql = "INSERT INTO unidade (sigla, descricao, ativo,idAntigo) VALUES (?, ?, true,?)";
 
-			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
-				// Verifica se sigla e descricao não são nulos antes de definir os valores no
-				// PreparedStatement
+			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) { 
+				
 				preparedStatement.setString(1, (sigla != null) ? sigla : "");
 				preparedStatement.setString(2, (descricao != null) ? descricao : "");
 				preparedStatement.setInt(3, idAntigo);
@@ -57,8 +56,7 @@ public class Unidade {
 	public static void dropTable(String tableName) {
 		try (Connection connection = ConexaoNova.obterConexao()) {
 			Statement statement = connection.createStatement();
-
-			// Adiciona a opção CASCADE para remover as dependências
+ 
 			String sql = "DROP TABLE " + tableName + " CASCADE";
 			statement.executeUpdate(sql);
 
@@ -102,8 +100,7 @@ public class Unidade {
 	public static void adicionarColunaIdAntigo() {
 		try (Connection connection = ConexaoNova.obterConexao()) {
 			Statement statement = connection.createStatement();
-
-			// Adiciona a coluna 'idAntigo' à tabela 'unidade'
+ 
 			String sql = "ALTER TABLE unidade ADD idAntigo int";
 			statement.executeUpdate(sql);
 
