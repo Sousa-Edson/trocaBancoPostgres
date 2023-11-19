@@ -114,6 +114,25 @@ public class Unidade {
 		}
 	}
 
+	public static int encontraUnidade(int idAntingo) throws SQLException {
+		Connection conn =  ConexaoNova.obterConexao();
+		int id = 0;
+		try {
+			String sql = "SELECT id, sigla, descricao, ativo FROM unidade WHERE idAntigo = ?";
+			PreparedStatement preparedStatement =conn.prepareStatement(sql);
+			preparedStatement.setInt(1, idAntingo);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				id = resultSet.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		conn.close();
+		return id;
+
+	}
+
 	public static void main(String[] args) {
 		dropTable("unidade");
 		createTableUnidade();
