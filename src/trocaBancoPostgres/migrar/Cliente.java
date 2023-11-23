@@ -38,7 +38,8 @@ public class Cliente {
 					String observacao = resultSet.getString("ecft_observacao");
 
 					System.out.println("" + telefone);
-					salvar(id, cnpj, nome, descricao, insc, endereco+" "+numero,cep,complemento,bairro,cidade,telefone,"");
+					salvar(id, cnpj, nome, descricao, insc, endereco + " " + numero, cep, complemento, bairro, cidade,
+							telefone, "");
 				}
 			}
 		} catch (SQLException e) {
@@ -46,15 +47,12 @@ public class Cliente {
 		}
 	}
 
-	public static void salvar(int idAntigo, String cnpj, String nome, String desc, String insc, String end,
-			String cep,String complemento,String bairro,String cidade,String contato,String responsavel) {
+	public static void salvar(int idAntigo, String cnpj, String nome, String desc, String insc, String end, String cep,
+			String complemento, String bairro, String cidade, String contato, String responsavel) {
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
-			String sql = ""
-					+ "INSERT INTO cliente (tipo_cliente, " + "cnpj, " + "razao_social," + " nome_fantasia, "
-					+ "  inscricao_estadual," + " inscricao_municipal," + " endereco, " + "tipo_empresa, " 
-					+ " cep, complemento, bairro, cidade,"
-							+ "contato, responsavel_legal,"
-							+ " ativo,idAntigo)  \n"
+			String sql = "" + "INSERT INTO cliente (tipo_cliente, " + "cnpj, " + "razao_social," + " nome_fantasia, "
+					+ "  inscricao_estadual," + " inscricao_municipal," + " endereco, " + "tipo_empresa, "
+					+ " cep, complemento, bairro, cidade," + "contato, responsavel_legal," + " ativo,idAntigo)  \n"
 					+ "   VALUES (1, ?, ?, ?, ?, '', ?, 1, ?,?,?,?,?,?,true,?)";
 
 			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
@@ -64,12 +62,12 @@ public class Cliente {
 				preparedStatement.setString(3, desc);
 				preparedStatement.setString(4, insc);
 				preparedStatement.setString(5, end);
-				
+
 				preparedStatement.setString(6, cep);
 				preparedStatement.setString(7, complemento);
 				preparedStatement.setString(8, bairro);
 				preparedStatement.setString(9, cidade);
-				
+
 				preparedStatement.setString(10, contato);
 				preparedStatement.setString(11, responsavel);
 
@@ -177,25 +175,24 @@ public class Cliente {
 		}
 	}
 
-//	public static int encontraCliente(int idAntingo) throws SQLException {
-//		Connection conn = ConexaoNova.obterConexao();
-//		int id = 0;
-//		try {
-//			String sql = "SELECT id, sigla, descricao, ativo FROM Cliente WHERE idAntigo = ?";
-//			PreparedStatement preparedStatement = conn.prepareStatement(sql);
-//			preparedStatement.setInt(1, idAntingo);
-//			ResultSet resultSet = preparedStatement.executeQuery();
-//			if (resultSet.next()) {
-//				id = resultSet.getInt("id");
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		conn.close();
-//		return id;
-//
-//	}
-	
+	public static int encontraCliente(int idAntingo) throws SQLException {
+		Connection conn = ConexaoNova.obterConexao();
+		int id = 0;
+		try {
+			String sql = "SELECT id  FROM Cliente WHERE idAntigo = ?";
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, idAntingo);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				id = resultSet.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		conn.close();
+		return id;
+
+	}
 
 	public static void main(String[] args) {
 		dropTable("Cliente");
