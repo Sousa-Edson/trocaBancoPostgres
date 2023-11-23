@@ -1,0 +1,35 @@
+{
+	"folders": {},
+	"connections": {
+		"postgres-jdbc-18be9f8a881-6cde6a92cd46114c": {
+			"provider": "postgresql",
+			"driver": "postgres-jdbc",
+			"name": "postgres",
+			"save-password": true,
+			"configuration": {
+				"host": "localhost",
+				"port": "5432",
+				"database": "SysEstoqueSwing2023",
+				"url": "jdbc:postgresql://localhost:5432/SysEstoqueSwing2023",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"provider-properties": {},
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Desenvolvimento",
+			"color": "255,255,255",
+			"description": "Banco de dados de desenvolvimento",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"smart-commit": false,
+			"smart-commit-recover": false,
+			"auto-close-transactions": true,
+			"close-transactions-period": 1800
+		}
+	}
+}

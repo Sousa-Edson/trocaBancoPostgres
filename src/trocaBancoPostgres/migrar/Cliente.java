@@ -37,8 +37,8 @@ public class Cliente {
 					String cidade = resultSet.getString("ecft_cidade");
 					String observacao = resultSet.getString("ecft_observacao");
 
-					System.out.println("" + descricao);
-					salvar(id, cnpj, nome, descricao, insc, endereco);
+					System.out.println("" + telefone);
+					salvar(id, cnpj, nome, descricao, insc, endereco+" "+numero,cep,complemento,bairro,cidade,telefone,"");
 				}
 			}
 		} catch (SQLException e) {
@@ -46,12 +46,16 @@ public class Cliente {
 		}
 	}
 
-	public static void salvar(int idAntigo, String cnpj, String nome, String desc, String insc, String end) {
+	public static void salvar(int idAntigo, String cnpj, String nome, String desc, String insc, String end,
+			String cep,String complemento,String bairro,String cidade,String contato,String responsavel) {
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
-			String sql = "INSERT INTO cliente (tipo_cliente, " + "cnpj, " + "razao_social," + " nome_fantasia, "
-					+ "  inscricao_estadual," + " inscricao_municipal," + " endereco, " + "contato,  "
-					+ "  responsavel_legal, " + "tipo_empresa, " + "ativo,idAntigo)  \n"
-					+ "   VALUES (1, ?, ?, ?, ?, '', ?, '', '', 1, true,?)";
+			String sql = ""
+					+ "INSERT INTO cliente (tipo_cliente, " + "cnpj, " + "razao_social," + " nome_fantasia, "
+					+ "  inscricao_estadual," + " inscricao_municipal," + " endereco, " + "tipo_empresa, " 
+					+ " cep, complemento, bairro, cidade,"
+							+ "contato, responsavel_legal,"
+							+ " ativo,idAntigo)  \n"
+					+ "   VALUES (1, ?, ?, ?, ?, '', ?, 1, ?,?,?,?,?,?,true,?)";
 
 			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
 
@@ -60,8 +64,16 @@ public class Cliente {
 				preparedStatement.setString(3, desc);
 				preparedStatement.setString(4, insc);
 				preparedStatement.setString(5, end);
+				
+				preparedStatement.setString(6, cep);
+				preparedStatement.setString(7, complemento);
+				preparedStatement.setString(8, bairro);
+				preparedStatement.setString(9, cidade);
+				
+				preparedStatement.setString(10, contato);
+				preparedStatement.setString(11, responsavel);
 
-				preparedStatement.setInt(6, idAntigo);
+				preparedStatement.setInt(12, idAntigo);
 
 				preparedStatement.executeUpdate();
 			}
@@ -148,6 +160,23 @@ public class Cliente {
 		}
 	}
 
+	public static void adicionarColunasParaEndereco() {
+		try (Connection connection = ConexaoNova.obterConexao()) {
+			Statement statement = connection.createStatement();
+
+			String sql = "ALTER TABLE public.cliente\n" + "ADD COLUMN cep varchar(10) NULL DEFAULT '',\n"
+					+ "ADD COLUMN complemento varchar(255) NULL DEFAULT '',\n"
+					+ "ADD COLUMN bairro varchar(100) NULL DEFAULT '',\n"
+					+ "ADD COLUMN cidade varchar(100) NULL DEFAULT '';";
+			statement.executeUpdate(sql);
+
+			System.out.println("Coluna 'deletado' adicionada à tabela 'NCM' com sucesso.");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 //	public static int encontraCliente(int idAntingo) throws SQLException {
 //		Connection conn = ConexaoNova.obterConexao();
 //		int id = 0;
@@ -173,6 +202,7 @@ public class Cliente {
 		adicionarColunaDeletado();
 		adicionarColunaIdAntigo();
 		adicionarColunaAtivo();
+		adicionarColunasParaEndereco();
 		migrarTabela();
 	}
 }
