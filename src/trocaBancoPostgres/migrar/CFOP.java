@@ -114,7 +114,7 @@ public class CFOP {
 		Connection conn = ConexaoNova.obterConexao();
 		int id = 0;
 		try {
-			String sql = "SELECT id, sigla, descricao, ativo FROM CFOP WHERE idAntigo = ?";
+			String sql = "SELECT id, codigo, descricao, ativo FROM CFOP WHERE idAntigo = ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, idAntingo);
 			ResultSet resultSet = preparedStatement.executeQuery();
