@@ -179,12 +179,13 @@ public class Cliente {
 		Connection conn = ConexaoNova.obterConexao();
 		int id = 0;
 		try {
-			String sql = "SELECT id  FROM Cliente WHERE idAntigo = ?";
+			String sql = "SELECT id,razao_social  FROM Cliente WHERE idAntigo = ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, idAntingo);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				id = resultSet.getInt("id");
+				System.out.println("cliente::"+resultSet.getString("razao_social"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

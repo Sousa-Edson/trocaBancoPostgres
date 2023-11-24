@@ -249,7 +249,7 @@ public class Nota {
 	}
 
 	public static void main(String[] args) {
-		dropTable("Nota");
+		dropTable("transacao");
 		createTable();
 		adicionarColunanomeMotorista();
 		adicionarColunaStatusNota();
