@@ -56,39 +56,14 @@ public class Nota {
 					String empresaint = resultSet.getString("empresaint");
 					String datavariavel = resultSet.getString("datavariavel");
 
-//					System.out.println("--------------------------------------------");
-//					System.out.println("id: " + id);
-//					System.out.println("nota_documento: " + nota_documento);
-//					System.out.println("nota_nota: " + nota_nota);
-//					System.out.println("nota_data: " + nota_data);
-//					System.out.println("nota_hora: " + nota_hora);
-//					System.out.println("nota_observacao: " + nota_observacao);
-//					System.out.println("nota_registro: " + nota_registro);
-//					System.out.println("nota_situacao: " + nota_situacao);
-//					System.out.println("nota_chave: " + nota_chave);
-//					System.out.println("nota_usu: " + nota_usu);
-//					System.out.println("id_referencianota: " + id_referencianota);
-//					System.out.println("stnota: " + stnota);
-//					System.out.println("naturezaint: " + naturezaint);
-//					System.out.println("fornecedorint: " + fornecedorint);
-//					System.out.println("modalidade: " + modalidade);
-//					System.out.println("transportadora: " + transportadora);
-//					System.out.println("motorista: " + motorista);
-//					System.out.println("placa: " + placa);
-//					System.out.println("uf: " + uf);
-//					System.out.println("quantidade: " + quantidade);
-//					System.out.println("especie: " + especie);
-//					System.out.println("numeracao: " + numeracao);
-//					System.out.println("pesobruto: " + pesobruto);
-//					System.out.println("pesoliquido: " + pesoliquido);
-//					System.out.println("motoristaint: " + motoristaint);
-//					System.out.println("empresaint: " + empresaint);
-//					System.out.println("datavariavel: " + datavariavel);
 					int tipo = 0;
 					if (nota_operacao.equals("SAIDA")) {
 						tipo = 1;
 					}
 					if (nota_hora.trim().equals(":")) {
+						nota_hora = "12:00:00";
+					}
+					if (nota_hora.trim().equals("")||nota_hora.trim().equals(" ")) {
 						nota_hora = "12:00:00";
 					}
 					if (nota_hora.equals("23:75")) {
@@ -99,10 +74,20 @@ public class Nota {
 					}
 					int cfop = CFOP.encontraCFOP(naturezaint);
 					int cliente = Cliente.encontraCliente(fornecedorint);
+					int status = 0;
+					if (nota_situacao.equals("4-ENVIADO")) {
+						status = 4;
+					}
+					if (nota_situacao.equals("3-AGUARDANDO")) {
+						status = 3;
+					}
+					System.out.println("------");
 					System.out.println("id::" + id);
+					System.out.println("nota_operacao::"+nota_operacao);
+					System.out.println("nota_situacao::" + nota_situacao);
 					salvar(id, tipo, cfop, cliente, nota_nota, nota_chave, nota_data, nota_hora, nota_observacao,
-							motorista);
-					 count++;
+							motorista, status);
+					count++;
 				}
 			}
 			System.out.println("count::" + count);
@@ -112,13 +97,13 @@ public class Nota {
 	}
 
 	public static void salvar(int id, int tipo, int cfop, int cliente, String nota, String chave, String data,
-			String hora, String informacao, String motorista) {
+			String hora, String informacao, String motorista, int status) {
 
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
 
 			String sql = "INSERT INTO transacao (tipo, cfop, cliente, nota, chave, "
-					+ "  data_transacao, hora_transacao, informacoes_complementares, deletado,nome_motorista,idAntigo) "
-					+ "  VALUES (?, ?, ?, ?, ?, TO_DATE(?, 'DD/MM/YYYY'), TO_TIMESTAMP(?, 'HH24:MI:SS'), ?, false,?,?) ";
+					+ "  data_transacao, hora_transacao, informacoes_complementares, deletado,nome_motorista,idAntigo,status_nota) "
+					+ "  VALUES (?, ?, ?, ?, ?, TO_DATE(?, 'DD/MM/YYYY'), TO_TIMESTAMP(?, 'HH24:MI:SS'), ?, false,?,?,?) ";
 
 			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
 
@@ -132,6 +117,7 @@ public class Nota {
 				preparedStatement.setString(8, informacao);
 				preparedStatement.setString(9, motorista);
 				preparedStatement.setInt(10, id);
+				preparedStatement.setInt(11, status);
 
 				preparedStatement.executeUpdate();
 			}

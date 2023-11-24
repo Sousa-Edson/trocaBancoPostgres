@@ -185,7 +185,7 @@ public class Cliente {
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				id = resultSet.getInt("id");
-				System.out.println("cliente::"+resultSet.getString("razao_social"));
+//				System.out.println("cliente::"+resultSet.getString("razao_social"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
