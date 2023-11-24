@@ -87,7 +87,6 @@ public class Nota {
 					}
 					System.out.println("------");
 					System.out.println("id::" + id);
-					
 					System.out.println("nota_operacao::"+nota_operacao);
 					System.out.println("nota_situacao::" + nota_situacao);
 					salvar(id, tipo, cfop, cliente, nota_nota, nota_chave, nota_data, nota_hora, nota_observacao,
