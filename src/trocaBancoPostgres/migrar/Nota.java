@@ -12,6 +12,7 @@ import trocaBancoPostgres.conexao.ConexaoNova;
 public class Nota {
 
 	public static void migrarTabela() {
+		int count = 0;
 		try (Connection remetenteConexao = ConexaoAntiga.obterConexao()) {
 
 			String query = " SELECT id_nota, nota_documento, nota_nota, nota_data, nota_hora, nota_observacao, "
@@ -39,7 +40,7 @@ public class Nota {
 					String nota_usu = resultSet.getString("nota_usu");
 					String id_referencianota = resultSet.getString("id_referencianota");
 					String stnota = resultSet.getString("stnota");
-					String fornecedorint = resultSet.getString("fornecedorint");
+					int fornecedorint = resultSet.getInt("fornecedorint");
 					String modalidade = resultSet.getString("modalidade");
 					String transportadora = resultSet.getString("transportadora");
 					String motorista = resultSet.getString("motorista");
@@ -87,11 +88,24 @@ public class Nota {
 					if (nota_operacao.equals("SAIDA")) {
 						tipo = 1;
 					}
-					int cfop=CFOP.encontraCFOP(naturezaint);
-					System.out.println("cfop::"+cfop);
-//					salvar( id, tipo, cfop,  cliente,  nota, chave, data, hora, informacao, motorista) ;
+					if (nota_hora.trim().equals(":")) {
+						nota_hora = "12:00:00";
+					}
+					if (nota_hora.equals("23:75")) {
+						nota_hora = "12:00:00";
+					}
+					if (nota_hora.equals("12:320")) {
+						nota_hora = "12:00:00";
+					}
+					int cfop = CFOP.encontraCFOP(naturezaint);
+					int cliente = Cliente.encontraCliente(fornecedorint);
+					System.out.println("id::" + id);
+					salvar(id, tipo, cfop, cliente, nota_nota, nota_chave, nota_data, nota_hora, nota_observacao,
+							motorista);
+					 count++;
 				}
 			}
+			System.out.println("count::" + count);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -99,10 +113,12 @@ public class Nota {
 
 	public static void salvar(int id, int tipo, int cfop, int cliente, String nota, String chave, String data,
 			String hora, String informacao, String motorista) {
+
 		try (Connection novaConexao = ConexaoNova.obterConexao()) {
+
 			String sql = "INSERT INTO transacao (tipo, cfop, cliente, nota, chave, "
 					+ "  data_transacao, hora_transacao, informacoes_complementares, deletado,nome_motorista,idAntigo) "
-					+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, false,?,?) ";
+					+ "  VALUES (?, ?, ?, ?, ?, TO_DATE(?, 'DD/MM/YYYY'), TO_TIMESTAMP(?, 'HH24:MI:SS'), ?, false,?,?) ";
 
 			try (PreparedStatement preparedStatement = novaConexao.prepareStatement(sql)) {
 
@@ -189,7 +205,7 @@ public class Nota {
 		try (Connection connection = ConexaoNova.obterConexao()) {
 			Statement statement = connection.createStatement();
 
-			String sql = " ALTER TABLE transacao\n" + "ALTER COLUMN chave TYPE VARCHAR(54);";
+			String sql = " ALTER TABLE transacao\n" + "ALTER COLUMN chave TYPE VARCHAR(64);";
 			statement.executeUpdate(sql);
 
 			System.out.println("Coluna 'chave' adicionada à tabela 'Nota' com sucesso.");
@@ -203,10 +219,10 @@ public class Nota {
 		try (Connection connection = ConexaoNova.obterConexao()) {
 			Statement statement = connection.createStatement();
 
-			String sql = "ALTER TABLE Nota ADD idAntigo int";
+			String sql = "ALTER TABLE transacao ADD idAntigo int";
 			statement.executeUpdate(sql);
 
-			System.out.println("Coluna 'idAntigo' adicionada à tabela 'CFOP' com sucesso.");
+			System.out.println("Coluna 'idAntigo' adicionada à tabela 'transacao' com sucesso.");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -217,7 +233,7 @@ public class Nota {
 		Connection conn = ConexaoNova.obterConexao();
 		int id = 0;
 		try {
-			String sql = "SELECT id, sigla, descricao, ativo FROM Nota WHERE idAntigo = ?";
+			String sql = "SELECT id  ativo FROM transacao WHERE idAntigo = ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, idAntingo);
 			ResultSet resultSet = preparedStatement.executeQuery();
@@ -235,10 +251,10 @@ public class Nota {
 	public static void main(String[] args) {
 		dropTable("Nota");
 		createTable();
-		adicionarColunaIdAntigo();
 		adicionarColunanomeMotorista();
 		adicionarColunaStatusNota();
 		alteraColunaChave();
+		adicionarColunaIdAntigo();
 		migrarTabela();
 	}
 }
