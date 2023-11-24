@@ -75,12 +75,15 @@ public class Nota {
 					}
 					int cfop = CFOP.encontraCFOP(naturezaint);
 					int cliente = Cliente.encontraCliente(fornecedorint);
-					int status = 0;
+					int status = 4;
 					if (nota_situacao.equals("4-ENVIADO")) {
 						status = 4;
 					}
 					if (nota_situacao.equals("3-AGUARDANDO")) {
 						status = 3;
+					}
+					if (nota_situacao.equals("5-DEVOLVIDO")) {
+						status = 4;
 					}
 					System.out.println("------");
 					System.out.println("id::" + id);
