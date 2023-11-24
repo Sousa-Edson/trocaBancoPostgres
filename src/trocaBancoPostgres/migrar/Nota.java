@@ -67,7 +67,8 @@ public class Nota {
 						nota_hora = "12:00:00";
 					}
 					if (nota_hora.equals("23:75")) {
-						nota_hora = "12:00:00";
+						nota_hora = "12:00:00";  
+						
 					}
 					if (nota_hora.equals("12:320")) {
 						nota_hora = "12:00:00";
