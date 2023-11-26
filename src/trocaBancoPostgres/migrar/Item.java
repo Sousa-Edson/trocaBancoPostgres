@@ -16,16 +16,35 @@ public class Item {
 
 			String query = "SELECT id_mov, id_prod_ent, data_mov, nota_mov, qtd_mov, qtd_prod, qtd_prod_ex, qtd_calc, qtd_calc_ex, valor_real, valor_moeda, destino_mov, complemento_mov,\n"
 					+ "registro_mov, volume, usuario_mov, modo_mov, total_mov, sistema_mov, stmovimento, stsaldo\n"
-					+ "FROM public.movprodutobase order by id_mov desc;";
+					+ "FROM public.movprodutobase where stmovimento=1 and nota_mov !=0 order by id_mov asc;";
 
 			try (Statement sourceStatement = remetenteConexao.createStatement();
 					ResultSet resultSet = sourceStatement.executeQuery(query)) {
 
 				while (resultSet.next()) {
-					int id = resultSet.getInt("id_referencianatureza");
-					String descricao = resultSet.getString("desc_natureza");
-					System.out.println("" + descricao);
-//					salvar(id, "", descricao);
+
+					int idTransacao = resultSet.getInt("nota_mov");
+					int idProduto = resultSet.getInt("id_prod_ent");
+					String complemento = resultSet.getString("complemento_mov");
+					double quantidade = resultSet.getDouble("qtd_mov");
+
+					int tipo = 0;
+					if (quantidade < 0) {
+						tipo = 1;
+					}
+
+					quantidade = Math.abs(quantidade);
+
+					System.out.println("idTransacao::" + idTransacao);
+					idTransacao = Nota.encontraNota(idTransacao);
+					
+					
+					if (idTransacao != 0) {
+						System.out.println("nota" + (idTransacao));
+						salvar(idTransacao, idProduto, complemento, quantidade, tipo);
+						System.out.println("salvo ==" + tipo);
+					}
+
 				}
 			}
 		} catch (SQLException e) {
@@ -47,7 +66,7 @@ public class Item {
 
 				preparedStatement.executeUpdate();
 			}
-
+			System.out.println("###SALVO AQUI " + idTransacao);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -99,29 +118,55 @@ public class Item {
 		}
 	}
 
-//	public static int encontraItem(int idAntingo) throws SQLException {
-//		Connection conn = ConexaoNova.obterConexao();
-//		int id = 0;
-//		try {
-//			String sql = "SELECT id, codigo, descricao, ativo FROM item WHERE idAntigo = ?";
-//			PreparedStatement preparedStatement = conn.prepareStatement(sql);
-//			preparedStatement.setInt(1, idAntingo);
-//			ResultSet resultSet = preparedStatement.executeQuery();
-//			if (resultSet.next()) {
-//				id = resultSet.getInt("id");
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		conn.close();
-//		return id;
-//
-//	}
+	public static void migrarTabelaNota(int idNotaAntigo) {
+		System.out.println("Recebendo - migrarTabelaNota::" + idNotaAntigo);
+		try (Connection remetenteConexao = ConexaoAntiga.obterConexao()) {
+
+			String query = "SELECT id_mov, id_prod_ent, data_mov, nota_mov, qtd_mov, qtd_prod, qtd_prod_ex, qtd_calc, qtd_calc_ex, valor_real, valor_moeda, destino_mov, complemento_mov,\n"
+					+ "registro_mov, volume, usuario_mov, modo_mov, total_mov, sistema_mov, stmovimento, stsaldo\n"
+					+ "FROM public.movprodutobase where stmovimento=1 and nota_mov = " + idNotaAntigo
+					+ " order by id_mov asc;";
+
+			try (Statement sourceStatement = remetenteConexao.createStatement();
+					ResultSet resultSet = sourceStatement.executeQuery(query)) {
+
+				while (resultSet.next()) {
+
+					int idTransacao = resultSet.getInt("nota_mov");
+					int idProduto = resultSet.getInt("id_prod_ent");
+					String complemento = resultSet.getString("complemento_mov");
+					double quantidade = resultSet.getDouble("qtd_mov");
+
+					int tipo = 0;
+					if (quantidade < 0) {
+						tipo = 1;
+					}
+
+					quantidade = Math.abs(quantidade);
+
+					System.out.println("idTransacao::" + idTransacao);
+					idTransacao = Nota.encontraNota(idTransacao);
+					
+					idProduto = Produto.encontraProduto(idProduto);
+					System.out.println("##idProduto::"+idProduto);
+					
+					if (idTransacao != 0) {
+						System.out.println("nota" + (idTransacao));
+						salvar(idTransacao, idProduto, complemento, quantidade, tipo);
+						System.out.println("salvo ==" + tipo);
+					}
+
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args) {
 		dropTable("item");
 		createTable();
 		adicionarColunaDeletado();
-		migrarTabela();
+//		migrarTabela();
 	}
 }

@@ -19,7 +19,7 @@ public class Nota {
 					+ "nota_registro, nota_situacao, nota_chave, nota_total, nota_operacao, nota_usu, "
 					+ "id_referencianota, stnota, naturezaint, fornecedorint, modalidade, transportadora, motorista, "
 					+ "placa, uf, quantidade, especie, numeracao, pesobruto, pesoliquido, motoristaint, empresaint, "
-					+ "datavariavel\n" + "FROM public.nota where stnota=1  order by id_nota asc ;";
+					+ "datavariavel\n" + "FROM public.nota where stnota=1   order by id_nota asc ;";
 
 			try (Statement sourceStatement = remetenteConexao.createStatement();
 					ResultSet resultSet = sourceStatement.executeQuery(query)) {
@@ -38,7 +38,7 @@ public class Nota {
 					int naturezaint = resultSet.getInt("naturezaint");
 
 					String nota_usu = resultSet.getString("nota_usu");
-					String id_referencianota = resultSet.getString("id_referencianota");
+					int id_referencianota = resultSet.getInt("id_referencianota");
 					String stnota = resultSet.getString("stnota");
 					int fornecedorint = resultSet.getInt("fornecedorint");
 					String modalidade = resultSet.getString("modalidade");
@@ -89,9 +89,10 @@ public class Nota {
 					System.out.println("id::" + id);
 					System.out.println("nota_operacao::"+nota_operacao);
 					System.out.println("nota_situacao::" + nota_situacao);
-					salvar(id, tipo, cfop, cliente, nota_nota, nota_chave, nota_data, nota_hora, nota_observacao,
+					salvar(id_referencianota, tipo, cfop, cliente, nota_nota, nota_chave, nota_data, nota_hora, nota_observacao,
 							motorista, status);
 					count++;
+					Item.migrarTabelaNota(id_referencianota);
 				}
 			}
 			System.out.println("count::" + count);
@@ -223,12 +224,13 @@ public class Nota {
 		Connection conn = ConexaoNova.obterConexao();
 		int id = 0;
 		try {
-			String sql = "SELECT id  ativo FROM transacao WHERE idAntigo = ?";
+			String sql = "SELECT id FROM transacao WHERE idAntigo = ?";
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, idAntingo);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				id = resultSet.getInt("id");
+				System.out.println("id->"+id);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

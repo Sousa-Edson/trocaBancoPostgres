@@ -148,6 +148,26 @@ public class Produto {
 			e.printStackTrace();
 		}
 	}
+	
+	public static int encontraProduto(int idAntingo) throws SQLException {
+		Connection conn =  ConexaoNova.obterConexao();
+		int id = 0;
+		try {
+			String sql = "SELECT id FROM produto WHERE idAntigo = ?";
+			PreparedStatement preparedStatement =conn.prepareStatement(sql);
+			preparedStatement.setInt(1, idAntingo);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				id = resultSet.getInt("id");
+				System.out.println("id antigo::"+idAntingo+" id novo::"+id);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		conn.close();
+		return id;
+
+	}
 
 	public static void main(String[] args) {
 		dropTable("produto");
