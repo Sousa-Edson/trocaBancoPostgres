@@ -24,8 +24,9 @@ public class CFOP {
 				while (resultSet.next()) {
 					int id = resultSet.getInt("id_referencianatureza");
 					String descricao = resultSet.getString("desc_natureza");
-					System.out.println("" + descricao);
-					salvar(id, "", descricao);
+					String c = retornaCodigo(descricao);
+					System.out.println("c:::" + c + " descrição:::" + descricao);
+					salvar(id, c, descricao);
 				}
 			}
 		} catch (SQLException e) {
@@ -127,6 +128,77 @@ public class CFOP {
 		conn.close();
 		return id;
 
+	}
+
+	public static String retornaCodigo(String descricao) {
+		String codigo = "";
+		switch (descricao) {
+
+		case "ENTRADA":
+			codigo = "0";
+			break;
+
+		case "SAIDA":
+			codigo = "1";
+			break;
+
+		case "DEVOLUCAO DE CONSIGNACAO":
+			codigo = "5405";
+			break;
+		case "REM. POR CONTA E ORDEM":
+			codigo = "5120";
+			break;
+		case "REMESSA PARA INDUSTRIALIZAÇÃO":
+			codigo = "5901";
+			break;
+		case "OUTRA SAIDA DE MERCADORIA OU SERVICO":
+			codigo = "5949";
+			break;
+		case "SIMPLES REMESSA":
+			codigo = "5949";
+			break;
+
+		case "VENDA DE MERCCADORIA":
+			codigo = "5101";
+			break;
+		case "REMESSA PARA INDUSTRIALIZACAO":
+			codigo = "5949";
+			break;
+		case "DEVOLUÇÃO MER REC CONSIGNAÇÃO":
+			codigo = "5408";
+			break;
+		case "REMESSA DE MERCADORIA EM CONSIGNACAO":
+			codigo = "5403";
+			break;
+
+		case "REMESSA P/ DEPÓSITO":
+			codigo = "5909";
+			break;
+		case "REMESSA PARA INDUSTRIALIZACAO POR ENCOMENDA ":
+			codigo = "5912";
+			break;
+		case "RET MERC UTIL NA IND P/ ENCOMENDA":
+			codigo = "5958";
+			break;
+		case "RETORNO DE INDUST. NAO EFETUAD":
+			codigo = "5948";
+			break;
+		case "REM DE BEM POR CONTA E ORDEM CONT COM":
+			codigo = "5155";
+			break;
+		case "REMESSA PARA BENEFICIAMENTO":
+			codigo = "5902";
+			break;
+
+		case "RETORNO REM P/ INDUSTRIALICAO":
+			codigo = "5902";
+			break;
+
+		default:
+			codigo = "";
+			break;
+		}
+		return codigo;
 	}
 
 	public static void main(String[] args) {
